@@ -18,6 +18,7 @@ public class MainActivity extends ActionBarActivity {
                     .add(R.id.container, new ForecastFragment())
                     .commit();
         }
+
     }
 
 
@@ -40,6 +41,7 @@ public class MainActivity extends ActionBarActivity {
             Intent intent = new Intent(this, SettingsActivity.class);
             startActivity(intent);
         }
+
 
         return super.onOptionsItemSelected(item);
     }

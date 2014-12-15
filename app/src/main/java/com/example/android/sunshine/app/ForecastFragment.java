@@ -1,9 +1,11 @@
 package com.example.android.sunshine.app;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -28,7 +30,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 
 /**
@@ -68,20 +69,35 @@ public class ForecastFragment extends Fragment {
         int id = item.getItemId();
         if (id == R.id.action_refresh) {
             //Log.i("Sunshine", "Refresh menu is clicked");
-            FetchWeatherTask weatherTask = new FetchWeatherTask();
-            weatherTask.execute("Chittagong");
 
+            updateWeather();
             return true;
         }
 
-        if(id == R.id.action_settings)
-        {
+        if (id == R.id.action_settings) {
             /*Intent intent = new Intent(getActivity(), SettingsActivity.class);
             startActivity(intent);*/
         }
         return super.onOptionsItemSelected(item);
     }
 
+    private void updateWeather() {
+
+        FetchWeatherTask weatherTask = new FetchWeatherTask();
+        // SharedPreferences for location data
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String location = prefs.getString(getString(R.string.pref_location_key),
+                getString(R.string.pref_location_default));
+
+        weatherTask.execute(location);
+
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        updateWeather();
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -92,23 +108,6 @@ public class ForecastFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
-        // ListView will contain these hard-coded string data.
-        String[] forecastArray = {
-                "Today - Sunny - 88/63",
-                "Tomorrow - Foggy - 70/40",
-                "Weds - Cloudy 72/63",
-                "Thurs - Asteroids - 75/65",
-                "Friday - Heavy Rain - 75/56",
-                "Sat - HELP TRAPPED IN WEATHER STATION - 60/51",
-                "Sun - Sunny - 80.68"
-        };
-
-        // ArrayList for easier manipulation of String data.
-        final ArrayList<String> weekForecast;
-        weekForecast = new ArrayList<String>(Arrays.asList(forecastArray));
-
-        //Log.d("Sunshine", weekForecast.toString());
-
         // Adapter is created with these parameters.
         mForecastAdapter = new ArrayAdapter<String>(
                 // The current context
@@ -118,7 +117,7 @@ public class ForecastFragment extends Fragment {
                 // ID of the textview to populate
                 R.id.list_item_forecast_textview,
                 // forecast data
-                weekForecast
+                new ArrayList<String>()
         );
 
         // Reference to the ListView created in the fragment_main.xml file.
@@ -171,6 +170,23 @@ public class ForecastFragment extends Fragment {
          */
         private String formatHighLows(double high, double low) {
             // For presentation, assume the user doesn't care about tenths of a degree.
+
+            SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            String unitType = sharedPrefs.getString(getString(R.string.pref_temperature_key),
+                    getString(R.string.pref_temperature_default));
+
+
+
+            if(unitType.equals(getString(R.string.pref_temperature_imperial)))
+            {
+                high = (high * 1.8) + 32;
+                low = (low * 1.8) + 32;
+            }
+            else if(!unitType.equals(getString(R.string.pref_temperature_metric)))
+            {
+                Log.d(LOG_TAG,  "Unit type not found: " + unitType);
+            }
+
             long roundedHigh = Math.round(high);
             long roundedLow = Math.round(low);
 
