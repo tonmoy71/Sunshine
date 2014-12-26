@@ -176,21 +176,17 @@ public class ForecastFragment extends Fragment {
                     getString(R.string.pref_temperature_default));
 
 
-
-            if(unitType.equals(getString(R.string.pref_temperature_imperial)))
-            {
+            if (unitType.equals(getString(R.string.pref_temperature_imperial))) {
                 high = (high * 1.8) + 32;
                 low = (low * 1.8) + 32;
-            }
-            else if(!unitType.equals(getString(R.string.pref_temperature_metric)))
-            {
-                Log.d(LOG_TAG,  "Unit type not found: " + unitType);
+            } else if (!unitType.equals(getString(R.string.pref_temperature_metric))) {
+                Log.d(LOG_TAG, "Unit type not found: " + unitType);
             }
 
             long roundedHigh = Math.round(high);
             long roundedLow = Math.round(low);
 
-            String highLowStr = roundedHigh + "/" + roundedLow;
+            String highLowStr = roundedHigh + "°" + "/" + roundedLow + "°";
             return highLowStr;
         }
 

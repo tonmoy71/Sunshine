@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.ShareActionProvider;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -11,8 +13,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import static android.support.v4.view.MenuItemCompat.getActionProvider;
 
-public class DetailActivity extends ActionBarActivity {
+
+public class DetailActivity extends ActionBarActivity
+
+{
+
+    private final String LOG_TAG = DetailActivity.class.getSimpleName();
+    private static final String FORECAST_SHARE_HASHTAG = " #SunshineApp";
+    private static String mForecastStr;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,7 +30,7 @@ public class DetailActivity extends ActionBarActivity {
         setContentView(R.layout.activity_detail);
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new PlaceholderFragment())
+                    .add(R.id.container, new DetailFragment())
                     .commit();
         }
     }
@@ -29,9 +39,36 @@ public class DetailActivity extends ActionBarActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_detail, menu);
+        getMenuInflater().inflate(R.menu.detail_fragment, menu);
+
+        // Retrieve the share menu item
+        MenuItem menuItem = menu.findItem(R.id.action_share);
+
+        // Get the provider and hold onto it to set/change the share intent
+        ShareActionProvider mShareActionProvider = (ShareActionProvider)
+                getActionProvider(menuItem);
+
+        // Attach an intent to this ShareActionProvider. You can update     this at any time,
+        // like when the user selects a new piece of data they might like to share.
+
+        if (mShareActionProvider != null) {
+            mShareActionProvider.setShareIntent(createShareForecastIntent());
+        } else {
+            Log.d(LOG_TAG, "Share Action Provider is null?");
+        }
+
         return true;
+
     }
+
+    private Intent createShareForecastIntent() {
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+        shareIntent.setType("text/plain");
+        shareIntent.putExtra(Intent.EXTRA_TEXT, mForecastStr + FORECAST_SHARE_HASHTAG);
+        return shareIntent;
+    }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -52,9 +89,11 @@ public class DetailActivity extends ActionBarActivity {
     /**
      * A placeholder fragment containing a simple view.
      */
-    public static class PlaceholderFragment extends Fragment {
+    public static class DetailFragment extends Fragment {
 
-        public PlaceholderFragment() {
+
+        public DetailFragment() {
+            setHasOptionsMenu(true);
         }
 
         @Override
@@ -65,10 +104,12 @@ public class DetailActivity extends ActionBarActivity {
             // Show the detail forecast by getting the information from the Main activity.
             TextView textView = (TextView) rootView.findViewById(R.id.detail_text);
             Intent intent = getActivity().getIntent();
-            String detailForecast = intent.getStringExtra(Intent.EXTRA_TEXT);
-            textView.setText(detailForecast);
+            mForecastStr = intent.getStringExtra(Intent.EXTRA_TEXT);
+            textView.setText(mForecastStr);
 
             return rootView;
         }
+
+
     }
 }

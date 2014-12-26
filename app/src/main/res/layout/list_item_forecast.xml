@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-    <!-- TextView used here contains a SINGLE element of the list. The view is generated with
-    new data when new list item is required. -->
+<!-- TextView used here contains a SINGLE element of the list. The view is generated with
+new data when new list item is required. -->
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
