@@ -1,17 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- Works as a KEY->VALUE pair -->
-
-    <!--  USER VISIBLE list of selection, works as a KEY-->
-    <string-array name="temperature_units">
-        <item name="metric">Metric (\u2103)</item>
-        <item name="imperial">Imperial (\u2109)</item>
+    <string-array name="pref_units_options">
+        <item>@string/pref_units_label_metric</item>
+        <item>@string/pref_units_label_imperial</item>
     </string-array>
 
-    <!-- Background VALUE that are associated with the KEY -->
-    <string-array name="temperature_units_values">
-        <item name="metric">metric</item>
-        <item name="imperial">imperial</item>
+    <string-array name="pref_units_values">
+        <item>@string/pref_units_metric</item>
+        <item>@string/pref_units_imperial</item>
     </string-array>
 </resources>
